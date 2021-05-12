@@ -1,0 +1,29 @@
+name: poc-Monitoring
+summary: PoC for Monitoring created for Ubuntu Core.
+description: |
+  A simple PoC for monitoring and other tasks written in Go.
+  Packaged as a Snap application using Snapcraft.
+version: '1.0'
+confinement: strict
+
+apps:
+  # monitoring
+  monitoring:
+    command: bin/Monitoring
+
+  # logging
+  logging:
+    command: bin/Logging
+
+parts:
+  poc-root:
+    plugin: go
+    go-packages:
+      - github.com/francescobianca/PoC-Monitoring-Golang/Monitoring
+      - github.com/francescobianca/PoC-Monitoring-Golang/Logging
+    source: .
+    go-importpath: github.com/francescobianca/PoC-Monitoring-Golang
+
+architectures:
+  - build-on: amd64
+    run-on: all
