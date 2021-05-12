@@ -15,12 +15,17 @@ apps:
   logging:
     command: bin/Logging
 
+  # logging
+  install:
+    command: bin/Install
+
 parts:
   poc-root:
     plugin: go
     go-packages:
       - github.com/francescobianca/PoC-Monitoring-Golang/Monitoring
       - github.com/francescobianca/PoC-Monitoring-Golang/Logging
+      - github.com/francescobianca/PoC-Monitoring-Golang/Install
     source: .
     go-importpath: github.com/francescobianca/PoC-Monitoring-Golang
 
