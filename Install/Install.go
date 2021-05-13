@@ -1,12 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
-	"os/exec"
 )
 
 func main() {
@@ -17,11 +14,11 @@ func main() {
 		panic(err)
 	}
 
-	install, err := exec.Command("snap install /home/fbianca/snap-folder/hello-world.snap", "--dangerous").Output()
+	/*install, err := exec.Command("snap install /home/fbianca/snap-folder/hello-world.snap", "--dangerous").Output()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%s\n", install)
+	fmt.Printf("%s\n", install)*/
 }
 
 // DownloadFile will download a url and store it in local filepath.
