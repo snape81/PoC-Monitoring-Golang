@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 )
 
@@ -21,11 +21,21 @@ func main() {
 	// Calling Sleep method
 	time.Sleep(10 * time.Second)
 
-	install, err := exec.Command("snap install /home/fbianca/snap-folder/hello-world.snap", "--dangerous").Output()
+	/*install, err := exec.Command("snap install /home/fbianca/snap-folder/hello-world.snap", "--dangerous").Output()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%s\n", install)
+	fmt.Printf("%s\n", install)*/
+
+	args := []string{"install", "/home/fbianca/snap-folder/hello-world.snap", "--dangerous"}
+	output, err := RunCMD("snap", args, true)
+
+	if err != nil {
+		fmt.Println("Error:", output)
+	} else {
+		fmt.Println("Result:", output)
+	}
+
 }
 
 // DownloadFile will download a url and store it in local filepath.
@@ -53,4 +63,25 @@ func DownloadFile(url string, filepath string) error {
 	}
 
 	return nil
+}
+
+// RunCMD is a simple wrapper around terminal commands
+func RunCMD(path string, args []string, debug bool) (out string, err error) {
+
+	cmd := exec.Command(path, args...)
+
+	var b []byte
+	b, err = cmd.CombinedOutput()
+	out = string(b)
+
+	if debug {
+		fmt.Println(strings.Join(cmd.Args[:], " "))
+
+		if err != nil {
+			fmt.Println("RunCMD ERROR")
+			fmt.Println(out)
+		}
+	}
+
+	return
 }
