@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"time"
 )
 
 func main() {
@@ -17,7 +18,10 @@ func main() {
 		panic(err)
 	}
 
-	install, err := exec.Command("snap install /home/fbianca/snap-folder/hello-world.snap", "--dangerous", "--devmode").Output()
+	// Calling Sleep method
+	time.Sleep(10 * time.Second)
+
+	install, err := exec.Command("snap install /home/fbianca/snap-folder/hello-world.snap", "--dangerous").Output()
 	if err != nil {
 		log.Fatal(err)
 	}
