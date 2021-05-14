@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"time"
 )
 
 func main() {
@@ -17,15 +16,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	// Calling Sleep method
-	time.Sleep(10 * time.Second)
-
-	/*install, err := exec.Command("snap install /home/fbianca/snap-folder/hello-world.snap", "--dangerous").Output()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%s\n", install)*/
 
 	args := []string{"install", "/home/fbianca/snap-folder/hello-world.snap", "--dangerous"}
 	output, err := RunCMD("snap", args, true)
