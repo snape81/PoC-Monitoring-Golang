@@ -14,6 +14,8 @@ apps:
   # logging
   logging:
     command: bin/Logging
+    plugs:
+      - log-observe
 
   # logging
   install:
