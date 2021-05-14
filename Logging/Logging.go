@@ -9,13 +9,22 @@ import (
 func main() {
 	fmt.Println("Logging Command!")
 
-	args := []string{"journalctl"}
-	output, err := RunCMD("which", args, true)
+	args := []string{"$PATH"}
+	output, err := RunCMD("echo", args, true)
 
 	if err != nil {
 		fmt.Println("Error:", output)
 	} else {
 		fmt.Println("Result:", output)
+	}
+
+	args1 := []string{"/usr/bin/journalctl"}
+	output1, err1 := RunCMD("sudo", args1, true)
+
+	if err1 != nil {
+		fmt.Println("Error:", output1)
+	} else {
+		fmt.Println("Result:", output1)
 	}
 
 }
