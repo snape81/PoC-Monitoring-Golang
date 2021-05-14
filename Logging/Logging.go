@@ -10,7 +10,7 @@ func main() {
 	fmt.Println("Logging Command!")
 
 	args := []string{"journalctl"}
-	output, err := RunCMD("sudo", args, true)
+	output, err := RunCMD("which", args, true)
 
 	if err != nil {
 		fmt.Println("Error:", output)
