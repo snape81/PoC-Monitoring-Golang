@@ -9,8 +9,8 @@ import (
 func main() {
 	fmt.Println("Logging Command!")
 
-	args := []string{"journalctl", "-n 200", "--no-pager"}
-	output, err := RunCMD("sudo", args, true)
+	args := []string{"-n 200", "--no-pager"}
+	output, err := RunCMD("sudo journalctl", args, true)
 
 	if err != nil {
 		fmt.Println("Error:", output)
