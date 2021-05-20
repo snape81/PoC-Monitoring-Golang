@@ -21,7 +21,7 @@ apps:
       - network-observe
       - hardware-observe
       - system-observe
-      - porcess-control
+      - process-control
       - run-systemd-sessions
 
   # logging
