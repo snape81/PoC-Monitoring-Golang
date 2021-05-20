@@ -10,6 +10,8 @@ apps:
   # monitoring
   monitoring:
     command: bin/Monitoring
+    plugs:
+      - system-observe
 
   # logging
   logging:
@@ -20,6 +22,8 @@ apps:
   # logging
   install:
     command: bin/Install
+    plugs:
+      - snapd-control
 
 parts:
   poc-root:
