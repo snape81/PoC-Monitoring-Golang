@@ -7,20 +7,22 @@ version: '1.0'
 confinement: strict
 
 plugs:
-  config-foo:
+  run-systemd-sessions:
     interface: system-files
     read:
-      - /usr/bin
-    write:
-      - /usr/bin
+      - /run/systemd/sessions
 
 apps:
   # monitoring
   monitoring:
     command: bin/Monitoring
     plugs:
+      - mount-observe
+      - network-observe
+      - hardware-observe
       - system-observe
-      - config-foo
+      - porcess-control
+      - run-systemd-sessions
 
   # logging
   logging:
@@ -33,8 +35,6 @@ apps:
     command: bin/Install
     plugs:
       - snapd-control
-      - system-observe
-      - config-foo
 
 
 parts:
