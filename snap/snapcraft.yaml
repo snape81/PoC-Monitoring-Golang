@@ -8,11 +8,9 @@ confinement: strict
 
 plugs:
   etc-conf:
-    interface: system-files
-    read:
-      - /home/fbianca/snap-folder
-    write:
-      - /home/fbianca/snap-folder
+    interface:
+      - personal-files
+      - snapd-control
 
 apps:
   # monitoring
