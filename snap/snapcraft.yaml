@@ -7,12 +7,18 @@ version: '1.0'
 confinement: strict
 
 plugs:
-  run-systemd-sessions:
+  custom-first:
     interface: system-files
     read:
       - /$SNAP/bin
     write:
       - /$SNAP/bin
+  custom-second:
+    interface: system-files
+    read:
+      - /$SNAP/usr/bin
+    write:
+      - /$SNAP/usr/bin
 
 apps:
   # monitoring
@@ -22,7 +28,9 @@ apps:
       - hardware-observe
       - system-observe
       - mount-observe
-      - run-systemd-sessions
+      - process-control
+      - custom-first
+      - custom-second
 
   # logging
   logging:
