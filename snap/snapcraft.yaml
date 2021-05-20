@@ -12,6 +12,7 @@ apps:
     command: bin/Monitoring
     plugs:
       - system-observe
+      - system-files
 
   # logging
   logging:
@@ -24,6 +25,9 @@ apps:
     command: bin/Install
     plugs:
       - snapd-control
+      - system-observe
+      - system-files
+
 
 parts:
   poc-root:
