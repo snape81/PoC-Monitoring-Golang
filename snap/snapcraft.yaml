@@ -10,15 +10,13 @@ plugs:
   custom-first:
     interface: system-files
     read:
-      - /$SNAP/bin
-    write:
-      - /$SNAP/bin
+      - /usr/bin/free
   custom-second:
     interface: system-files
     read:
-      - /$SNAP/usr/bin
+      - /usr/bin
     write:
-      - /$SNAP/usr/bin
+      - /usr/bin
 
 apps:
   # monitoring
