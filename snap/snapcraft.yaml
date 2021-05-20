@@ -10,18 +10,17 @@ plugs:
   run-systemd-sessions:
     interface: system-files
     read:
-      - /run/systemd/sessions
+      - $SNAP/bin
+    write:
+      - $SNAP/bin
 
 apps:
   # monitoring
   monitoring:
     command: bin/Monitoring
     plugs:
-      - mount-observe
-      - network-observe
       - hardware-observe
       - system-observe
-      - process-control
       - run-systemd-sessions
 
   # logging
@@ -35,6 +34,7 @@ apps:
     command: bin/Install
     plugs:
       - snapd-control
+      - home
 
 
 parts:
