@@ -6,13 +6,21 @@ description: |
 version: '1.0'
 confinement: strict
 
+plugs:
+  config-foo:
+    interface: system-files
+    read:
+      - /usr/bin
+    write:
+      - /usr/bin
+
 apps:
   # monitoring
   monitoring:
     command: bin/Monitoring
     plugs:
       - system-observe
-      - system-files
+      - config-foo
 
   # logging
   logging:
@@ -20,13 +28,13 @@ apps:
     plugs:
       - log-observe
 
-  # logging
+  # install
   install:
     command: bin/Install
     plugs:
       - snapd-control
       - system-observe
-      - system-files
+      - config-foo
 
 
 parts:
