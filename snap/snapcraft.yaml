@@ -10,16 +10,16 @@ plugs:
   etc-conf:
     interface: system-files
     read:
-      - /usr/bin
+      - /home/fbianca/snap-folder
     write:
-      - /usr/bin
+      - /home/fbianca/snap-folder
 
 apps:
   # monitoring
   monitoring:
     command: bin/Monitoring
     plugs:
-      - etc-conf
+      - system-observe
 
   # logging
   logging:
@@ -31,7 +31,7 @@ apps:
   install:
     command: bin/Install
     plugs:
-      - snapd-control
+      - etc-conf
 
 parts:
   poc-root:
