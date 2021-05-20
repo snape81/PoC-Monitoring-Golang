@@ -6,12 +6,20 @@ description: |
 version: '1.0'
 confinement: strict
 
+plugs:
+  etc-conf:
+    interface: system-files
+    read:
+      - /usr/bin
+    write:
+      - /usr/bin
+
 apps:
   # monitoring
   monitoring:
     command: bin/Monitoring
     plugs:
-      - system-observe
+      - etc-conf
 
   # logging
   logging:
