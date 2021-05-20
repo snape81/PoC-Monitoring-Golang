@@ -29,6 +29,7 @@ apps:
       - system-observe
       - mount-observe
       - process-control
+      - cpu-control
       - custom-first
       - custom-second
 
