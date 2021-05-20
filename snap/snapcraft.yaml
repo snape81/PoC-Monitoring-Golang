@@ -10,9 +10,9 @@ plugs:
   run-systemd-sessions:
     interface: system-files
     read:
-      - $SNAP/bin
+      - /$SNAP/bin
     write:
-      - $SNAP/bin
+      - /$SNAP/bin
 
 apps:
   # monitoring
@@ -35,6 +35,7 @@ apps:
     plugs:
       - snapd-control
       - home
+      - network
 
 
 parts:
