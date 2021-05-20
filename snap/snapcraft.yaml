@@ -57,7 +57,8 @@ parts:
       - github.com/francescobianca/PoC-Monitoring-Golang/Install
     source: .
     go-importpath: github.com/francescobianca/PoC-Monitoring-Golang
-    stage-packages: sysstat
+    stage-packages:
+      - sysstat
 
 architectures:
   - build-on: amd64
