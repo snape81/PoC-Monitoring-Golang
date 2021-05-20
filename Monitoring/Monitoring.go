@@ -15,12 +15,12 @@ func main() {
 	fmt.Printf("The date is %s\n", date)
 
 	// Read mem unix system
-	mem, err := exec.Command("free", "-m").Output()
+	/*mem, err := exec.Command("free", "-m").Output()
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("Memory usage:\n")
-	fmt.Printf("%s\n", mem)
+	fmt.Printf("%s\n", mem)*/
 
 	// vm stat
 	/*vmstat, err := exec.Command("vmstat").Output()
@@ -31,10 +31,10 @@ func main() {
 	fmt.Printf("%s\n", vmstat)*/
 
 	// Read disk unix system
-	/*disk, err := exec.Command("df", "-h").Output()
+	disk, err := exec.Command("df", "-h").Output()
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("Disk usage:\n")
-	fmt.Printf("%s\n", disk)*/
+	fmt.Printf("%s\n", disk)
 }

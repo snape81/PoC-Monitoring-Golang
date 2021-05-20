@@ -21,6 +21,7 @@ apps:
     plugs:
       - hardware-observe
       - system-observe
+      - mount-observe
       - run-systemd-sessions
 
   # logging
