@@ -6,12 +6,6 @@ description: |
 version: '1.0'
 confinement: strict
 
-plugs:
-  etc-conf:
-    interface:
-      - personal-files
-      - snapd-control
-
 apps:
   # monitoring
   monitoring:
@@ -29,7 +23,7 @@ apps:
   install:
     command: bin/Install
     plugs:
-      - etc-conf
+      - snapd-control
 
 parts:
   poc-root:
