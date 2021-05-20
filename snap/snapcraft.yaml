@@ -46,6 +46,8 @@ apps:
       - snapd-control
       - home
       - network
+      - personal-files
+      - account-control
 
 
 parts:
