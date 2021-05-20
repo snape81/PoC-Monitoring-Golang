@@ -23,12 +23,12 @@ func main() {
 	fmt.Printf("%s\n", mem)*/
 
 	// vm stat
-	/*vmstat, err := exec.Command("vmstat").Output()
+	vmstat, err := exec.Command("vmstat").Output()
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("vmstat output:\n")
-	fmt.Printf("%s\n", vmstat)*/
+	fmt.Printf("%s\n", vmstat)
 
 	// Read disk unix system
 	disk, err := exec.Command("df", "-h").Output()
