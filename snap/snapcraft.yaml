@@ -57,6 +57,8 @@ parts:
       - github.com/francescobianca/PoC-Monitoring-Golang/Install
     source: .
     go-importpath: github.com/francescobianca/PoC-Monitoring-Golang
+  curl:
+    plugin: nil
     stage-snaps:
       - curl
 
