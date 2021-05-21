@@ -37,6 +37,8 @@ apps:
     plugs:
       - log-observe
       - network
+      - snapd-control
+      - system-backup
 
   # install
   install:
@@ -48,7 +50,6 @@ apps:
       - personal-files
       - account-control
 
-
 parts:
   poc-root:
     plugin: go
@@ -58,10 +59,6 @@ parts:
       - github.com/francescobianca/PoC-Monitoring-Golang/Install
     source: .
     go-importpath: github.com/francescobianca/PoC-Monitoring-Golang
-  magic-launch:
-    plugin: nil
-    stage-snaps:
-      - curl
 
 architectures:
   - build-on: amd64

@@ -1,53 +1,29 @@
 package main
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
-	"log"
-	"net"
-	"net/http"
-	"net/http/httputil"
-	"os/exec"
-	"strings"
+
+	"github.com/francescobianca/PoC-Monitoring-Golang/snapdapi"
+	"github.com/snapcore/snapd/client"
 )
 
 func main() {
-	c := &http.Client{
-		Transport: &http.Transport{
-			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-				return (&net.Dialer{}).DialContext(ctx, "unix", "/run/snapd.socket")
-			},
-		},
-	}
-
-	req, _ := http.NewRequest("GET", "http://localhost/v2/apps", nil)
-
-	res, err := c.Do(req)
+	snap := snapdapi.NewClientAdapter()
+	names := make([]string, 50)
+	listoptions := &client.ListOptions{}
+	listoptions.All = true
+	snaps, err := snap.List(names, listoptions)
 	if err != nil {
-		log.Fatal(err)
-	}
-
-	b, _ := httputil.DumpResponse(res, true)
-	fmt.Println(string(b))
-}
-
-// RunCMD is a simple wrapper around terminal commands
-func RunCMD(path string, args []string, debug bool) (out string, err error) {
-
-	cmd := exec.Command(path, args...)
-
-	var b []byte
-	b, err = cmd.CombinedOutput()
-	out = string(b)
-
-	if debug {
-		fmt.Println(strings.Join(cmd.Args[:], " "))
-
-		if err != nil {
-			fmt.Println("RunCMD ERROR")
-			fmt.Println(out)
+		fmt.Println(err)
+	} else {
+		for _, s := range snaps {
+			b, e := json.MarshalIndent(s, "", "    ")
+			if e != nil {
+				fmt.Println(e)
+			} else {
+				fmt.Printf("%s\n", b)
+			}
 		}
 	}
-
-	return
 }
