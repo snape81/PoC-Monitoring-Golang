@@ -57,8 +57,6 @@ parts:
       - github.com/francescobianca/PoC-Monitoring-Golang/Install
     source: .
     go-importpath: github.com/francescobianca/PoC-Monitoring-Golang
-    build-packages:
-      - curl
 
 architectures:
   - build-on: amd64

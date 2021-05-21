@@ -2,22 +2,20 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 	"os/exec"
 	"strings"
 )
 
 func main() {
-	fmt.Println("Logging Command!")
-
-	args := []string{"journalctl", "-n 200", "--no-pager"}
-	output, err := RunCMD("sudo", args, true)
-
+	resp, err := http.Get("http://example.com/")
 	if err != nil {
-		fmt.Println("Error:", output)
-	} else {
-		fmt.Println("Result:", output)
+		// handle error
 	}
-
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	fmt.Println(body)
 }
 
 // RunCMD is a simple wrapper around terminal commands
