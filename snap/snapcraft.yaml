@@ -1,5 +1,4 @@
 name: poc-monitoring
-base: core18
 summary: PoC for Monitoring created for Ubuntu Core.
 description: |
   A simple PoC for monitoring and other tasks written in Go.
@@ -55,7 +54,7 @@ apps:
 parts:
   poc-root:
     plugin: go
-    go-channel: 1.13/stable
+    go-channel: "1.10/stable"
     go-packages:
       - github.com/francescobianca/PoC-Monitoring-Golang/Monitoring
       - github.com/francescobianca/PoC-Monitoring-Golang/Logging
