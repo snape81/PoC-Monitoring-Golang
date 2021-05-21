@@ -1,4 +1,5 @@
 name: poc-monitoring
+base: core20
 summary: PoC for Monitoring created for Ubuntu Core.
 description: |
   A simple PoC for monitoring and other tasks written in Go.
