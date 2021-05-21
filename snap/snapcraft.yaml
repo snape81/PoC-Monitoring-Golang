@@ -3,6 +3,7 @@ summary: PoC for Monitoring created for Ubuntu Core.
 description: |
   A simple PoC for monitoring and other tasks written in Go.
   Packaged as a Snap application using Snapcraft.
+base: core18
 version: '1.0'
 confinement: strict
 
@@ -57,8 +58,6 @@ parts:
       - github.com/francescobianca/PoC-Monitoring-Golang/Install
     source: .
     go-importpath: github.com/francescobianca/PoC-Monitoring-Golang
-  curl:
-    plugin: nil
     stage-snaps:
       - curl
 
