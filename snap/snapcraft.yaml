@@ -52,13 +52,16 @@ apps:
 parts:
   poc-root:
     plugin: go
-    go-channel: 1.13/stable
     go-packages:
       - github.com/francescobianca/PoC-Monitoring-Golang/Monitoring
       - github.com/francescobianca/PoC-Monitoring-Golang/Logging
       - github.com/francescobianca/PoC-Monitoring-Golang/Install
     source: .
     go-importpath: github.com/francescobianca/PoC-Monitoring-Golang
+  magic-launch:
+    plugin: nil
+    stage-snaps:
+      - curl
 
 architectures:
   - build-on: amd64
