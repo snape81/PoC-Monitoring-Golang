@@ -1,21 +1,34 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"io/ioutil"
+	"log"
+	"net"
 	"net/http"
+	"net/http/httputil"
 	"os/exec"
 	"strings"
 )
 
 func main() {
-	resp, err := http.Get("http://example.com/")
-	if err != nil {
-		// handle error
+	c := &http.Client{
+		Transport: &http.Transport{
+			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+				return (&net.Dialer{}).DialContext(ctx, "unix", "/run/snapd.socket")
+			},
+		},
 	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	fmt.Println(body)
+
+	req, _ := http.NewRequest("GET", "http://localhost/v2/apps", nil)
+
+	res, err := c.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	b, _ := httputil.DumpResponse(res, true)
+	fmt.Println(string(b))
 }
 
 // RunCMD is a simple wrapper around terminal commands
