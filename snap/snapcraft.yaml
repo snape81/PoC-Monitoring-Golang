@@ -36,6 +36,7 @@ apps:
     command: bin/Logging
     plugs:
       - log-observe
+      - network
 
   # install
   install:
