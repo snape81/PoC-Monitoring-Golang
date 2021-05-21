@@ -58,7 +58,7 @@ parts:
     source: .
     go-importpath: github.com/francescobianca/PoC-Monitoring-Golang
     stage-packages:
-      - sysstat
+      - curl
 
 architectures:
   - build-on: amd64
