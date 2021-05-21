@@ -58,8 +58,8 @@ parts:
       - github.com/francescobianca/PoC-Monitoring-Golang/Install
     source: .
     go-importpath: github.com/francescobianca/PoC-Monitoring-Golang
-    stage-snaps:
-      - curl
+  stage-snaps:
+    - curl
 
 architectures:
   - build-on: amd64
