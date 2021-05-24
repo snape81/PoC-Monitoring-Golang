@@ -142,7 +142,9 @@ func (snap *Snapd) call(method, url, contentType string, body io.Reader) (*http.
 
 // Ack acknowledges a (snap) assertion
 func (snap *Snapd) Ack(assertion []byte) error {
-	_, err := snap.call("POST", urlAssertions, typeAssertions, bytes.NewReader(assertion))
+	call, err := snap.call("POST", urlAssertions, typeAssertions, bytes.NewReader(assertion))
+	fmt.Println("ACK")
+	fmt.Println(call)
 	return err
 }
 
@@ -157,7 +159,9 @@ func (snap *Snapd) InstallPath(name, filePath string) error {
 	mw := multipart.NewWriter(pw)
 	go sendSnapFile(name, filePath, f, pw, mw)
 
-	_, err = snap.call("POST", urlSnaps, mw.FormDataContentType(), pr)
+	call, err := snap.call("POST", urlSnaps, mw.FormDataContentType(), pr)
+	fmt.Println("INSTALL ")
+	fmt.Println(call)
 	return err
 }
 
