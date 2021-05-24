@@ -59,7 +59,7 @@ parts:
       - github.com/snape81/PoC-Monitoring-Golang/Logging
       - github.com/snape81/PoC-Monitoring-Golang/Install
     source: .
-    source-type: git
+    source-type: local
     go-importpath: github.com/snape81/PoC-Monitoring-Golang
     build-packages: [ gcc ]
 
