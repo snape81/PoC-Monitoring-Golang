@@ -26,8 +26,8 @@ const (
 )
 
 func main() {
-	const url_snap = "https://raw.githubusercontent.com/francescobianca/PoC-Monitoring-Golang/main/hello-lhc_4.snap"
-	const url_assert = "https://raw.githubusercontent.com/francescobianca/PoC-Monitoring-Golang/main/hello-lhc_4.assert"
+	const url_snap = "https://raw.githubusercontent.com/snape81/PoC-Monitoring-Golang/main/hello-lhc_4.snap"
+	const url_assert = "https://raw.githubusercontent.com/snape81/PoC-Monitoring-Golang/main/hello-lhc_4.assert"
 
 	err_lhc := DownloadFile(url_snap, download_path+"/hello-lhc_4.snap")
 	if err_lhc != nil {

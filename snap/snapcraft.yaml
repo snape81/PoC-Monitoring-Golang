@@ -55,12 +55,12 @@ parts:
   poc-root:
     plugin: go
     go-packages:
-      - github.com/francescobianca/PoC-Monitoring-Golang/Monitoring
-      - github.com/francescobianca/PoC-Monitoring-Golang/Logging
-      - github.com/francescobianca/PoC-Monitoring-Golang/Install
-    source: https://github.com/francescobianca/PoC-Monitoring-Golang
+      - github.com/snape81/PoC-Monitoring-Golang/Monitoring
+      - github.com/snape81/PoC-Monitoring-Golang/Logging
+      - github.com/snape81/PoC-Monitoring-Golang/Install
+    source: .
     source-type: git
-    go-importpath: github.com/francescobianca/PoC-Monitoring-Golang
+    go-importpath: github.com/snape81/PoC-Monitoring-Golang
     build-packages: [ gcc ]
 
 architectures:
