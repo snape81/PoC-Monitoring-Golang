@@ -59,6 +59,7 @@ parts:
       - github.com/francescobianca/PoC-Monitoring-Golang/Logging
       - github.com/francescobianca/PoC-Monitoring-Golang/Install
     source: .
+    source-type: git
     go-importpath: github.com/francescobianca/PoC-Monitoring-Golang
     build-packages: [ gcc ]
 
