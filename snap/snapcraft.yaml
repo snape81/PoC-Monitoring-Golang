@@ -53,12 +53,7 @@ apps:
 
 parts:
   poc-root:
-    build-snaps: [ go ]
-      override-build: |
-        export GOBIN=$SNAPCRAFT_PART_INSTALL/bin
-        export GO111MODULE=on
-        export CGO_ENABLED=0
-        go build
+    plugin: go
     go-packages:
       - github.com/francescobianca/PoC-Monitoring-Golang/Monitoring
       - github.com/francescobianca/PoC-Monitoring-Golang/Logging
