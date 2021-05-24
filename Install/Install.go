@@ -10,21 +10,27 @@ import (
 )
 
 func main() {
-	const url = "https://raw.githubusercontent.com/francescobianca/PoC-Monitoring-Golang/main/hello-world_29.snap"
+	const url_snap = "https://raw.githubusercontent.com/francescobianca/PoC-Monitoring-Golang/main/hello-lhc_4.snap"
+	const url_assert = "https://raw.githubusercontent.com/francescobianca/PoC-Monitoring-Golang/main/hello-lhc_4.assert"
 
-	err := DownloadFile(url, "/home/fbianca/snap-folder/hello-world.snap")
+	err_lhc := DownloadFile(url_snap, "/home/fbianca/snap-folder/hello-lhc.snap")
+	if err_lhc != nil {
+		panic(err_lhc)
+	}
+
+	err := DownloadFile(url_assert, "/home/fbianca/snap-folder/hello-lhc.assert")
 	if err != nil {
 		panic(err)
 	}
 
-	args := []string{"install", "/home/fbianca/snap-folder/hello-world.snap", "--dangerous"}
-	output, err := RunCMD("snap", args, true)
+	/*args := []string{"install", "/home/fbianca/snap-folder/hello-world.snap", "--dangerous"}
+	output, err_lhc := RunCMD("snap", args, true)
 
-	if err != nil {
+	if err_lhc != nil {
 		fmt.Println("Error:", output)
 	} else {
 		fmt.Println("Result:", output)
-	}
+	}*/
 
 }
 

@@ -1,66 +1,150 @@
-package snapdapi
+package snapd
 
 import (
-	"sync"
-
-	"github.com/snapcore/snapd/asserts"
-	"github.com/snapcore/snapd/client"
+	"bytes"
+	"context"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"mime/multipart"
+	"net"
+	"net/http"
+	"os"
+	"path"
+	"path/filepath"
 )
 
-var clientOnce sync.Once
-var clientInstance *ClientAdapter
+const (
+	socketFile     = "/run/snapd.socket"
+	urlAssertions  = "/v2/assertions"
+	urlSnaps       = "/v2/snaps"
+	typeAssertions = "application/x.ubuntu.assertion"
+	baseURL        = "http://localhost"
+)
 
-// ClientAdapter adapts our expectations to the snapd client API.
-type ClientAdapter struct {
-	snapdClient *client.Client
+// Client is the abstract client interface
+type Client interface {
+	Ack(assertion []byte) error
+	InstallPath(name, filePath string) error
+	List() ([]byte, error)
+	SideloadInstall(name, revision string) error
 }
 
-// NewClientAdapter creates a new ClientAdapter as a singleton
-func NewClientAdapter() *ClientAdapter {
-	clientOnce.Do(func() {
-		clientInstance = &ClientAdapter{
-			snapdClient: client.New(nil),
+// Snapd service to access the snapd REST API
+type Snapd struct {
+	downloadPath string
+	client       *http.Client
+}
+
+// NewClient returns a snapd API client
+func NewClient(downloadPath string) *Snapd {
+	return &Snapd{
+		downloadPath: downloadPath,
+		client: &http.Client{
+			Transport: &http.Transport{
+				DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
+					return net.Dial("unix", socketFile)
+				},
+			},
+		},
+	}
+}
+
+func (snap *Snapd) call(method, url, contentType string, body io.Reader) (*http.Response, error) {
+	u := baseURL + url
+
+	switch method {
+	case "POST":
+		return snap.client.Post(u, contentType, body)
+	case "GET":
+		return snap.client.Get(u)
+	default:
+		return nil, fmt.Errorf("unsupported method: %s", method)
+	}
+}
+
+// Ack acknowledges a (snap) assertion
+func (snap *Snapd) Ack(assertion []byte) error {
+	_, err := snap.call("POST", urlAssertions, typeAssertions, bytes.NewReader(assertion))
+	return err
+}
+
+// InstallPath installs a snap from a local file
+func (snap *Snapd) InstallPath(name, filePath string) error {
+	f, err := os.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("cannot open: %q", filePath)
+	}
+
+	pr, pw := io.Pipe()
+	mw := multipart.NewWriter(pw)
+	go sendSnapFile(name, filePath, f, pw, mw)
+
+	_, err = snap.call("POST", urlSnaps, mw.FormDataContentType(), pr)
+	return err
+}
+
+// List the installed snaps
+func (snap *Snapd) List() ([]byte, error) {
+	resp, err := snap.call("GET", urlSnaps, "application/json; charset=UTF-8", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return ioutil.ReadAll(resp.Body)
+}
+
+// SideloadInstall side loads a snap by acknowledging the assertion and installing the snap
+func (snap *Snapd) SideloadInstall(name, revision string) error {
+	assertsPath := path.Join(snap.downloadPath, fmt.Sprintf("%s_%s.assert", name, revision))
+	snapPath := path.Join(snap.downloadPath, fmt.Sprintf("%s_%s.snap", name, revision))
+
+	// acknowledge the snap assertion
+	dataAssert, err := ioutil.ReadFile(assertsPath)
+	if err != nil {
+		return err
+	}
+	if err := snap.Ack(dataAssert); err != nil {
+		return err
+	}
+
+	// install the snap
+	return snap.InstallPath(name, snapPath)
+}
+
+func sendSnapFile(name, snapPath string, snapFile *os.File, pw *io.PipeWriter, mw *multipart.Writer) {
+	defer snapFile.Close()
+
+	fields := []struct {
+		name  string
+		value string
+	}{
+		{"action", "install"},
+		{"name", name},
+		{"snap-path", snapPath},
+	}
+	for _, s := range fields {
+		if s.value == "" {
+			continue
 		}
-	})
+		if err := mw.WriteField(s.name, s.value); err != nil {
+			pw.CloseWithError(err)
+			return
+		}
+	}
 
-	return clientInstance
-}
+	fw, err := mw.CreateFormFile("snap", filepath.Base(snapPath))
+	if err != nil {
+		pw.CloseWithError(err)
+		return
+	}
 
-//return current model assertion
-func (a *ClientAdapter) Remodel(b []byte) (string, error) {
-	return a.snapdClient.Remodel(b)
-}
+	_, err = io.Copy(fw, snapFile)
+	if err != nil {
+		pw.CloseWithError(err)
+		return
+	}
 
-//return current model assertion
-func (a *ClientAdapter) CurrentModelAssertion() (*asserts.Model, error) {
-	return a.snapdClient.CurrentModelAssertion()
-}
-
-// Snap returns the most recently published revision of the snap with the
-// provided name.
-func (a *ClientAdapter) Snap(name string) (*client.Snap, *client.ResultInfo, error) {
-	return a.snapdClient.Snap(name)
-}
-
-//
-func (a *ClientAdapter) Start(names []string, opts client.StartOptions) (changeID string, err error) {
-	return a.snapdClient.Start(names, opts)
-}
-
-// List returns the list of all snaps installed on the system
-// with names in the given list; if the list is empty, all snaps.
-func (a *ClientAdapter) List(names []string, opts *client.ListOptions) ([]*client.Snap, error) {
-	return a.snapdClient.List(names, opts)
-}
-
-func (a *ClientAdapter) Find(opts *client.FindOptions) ([]*client.Snap, *client.ResultInfo, error) {
-	return a.snapdClient.Find(opts)
-}
-
-func (a *ClientAdapter) CreateUser(opts *client.CreateUserOptions) (*client.CreateUserResult, error) {
-	return a.snapdClient.CreateUser(opts)
-}
-
-func (a *ClientAdapter) RemoveUser(opts *client.RemoveUserOptions) ([]*client.User, error) {
-	return a.snapdClient.RemoveUser(opts)
+	mw.Close()
+	pw.Close()
 }
