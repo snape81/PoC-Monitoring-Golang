@@ -22,7 +22,7 @@ const (
 	urlSnaps       = "/v2/snaps"
 	typeAssertions = "application/x.ubuntu.assertion"
 	baseURL        = "http://localhost"
-	download_path  = "/home/fbianca/snap-folder"
+	download_path  = "/home/claudio/snap-folder"
 )
 
 func main() {
