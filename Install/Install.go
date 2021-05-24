@@ -45,6 +45,9 @@ func main() {
 		panic(err_sideload)
 	}
 
+	list, err_lhc := snapclient.List()
+	println(string(list))
+
 	/*args := []string{"install", "/home/fbianca/snap-folder/hello-world.snap", "--dangerous"}
 	output, err_lhc := RunCMD("snap", args, true)
 
@@ -170,17 +173,17 @@ func (snap *Snapd) List() ([]byte, error) {
 
 // SideloadInstall side loads a snap by acknowledging the assertion and installing the snap
 func (snap *Snapd) SideloadInstall(name, revision string) error {
-	//assertsPath := path.Join(snap.downloadPath, fmt.Sprintf("%s_%s.assert", name, revision))
+	assertsPath := path.Join(snap.downloadPath, fmt.Sprintf("%s_%s.assert", name, revision))
 	snapPath := path.Join(snap.downloadPath, fmt.Sprintf("%s_%s.snap", name, revision))
 
 	// acknowledge the snap assertion
-	/*dataAssert, err := ioutil.ReadFile(assertsPath)
+	dataAssert, err := ioutil.ReadFile(assertsPath)
 	if err != nil {
 		return err
 	}
 	if err := snap.Ack(dataAssert); err != nil {
 		return err
-	}*/
+	}
 
 	// install the snap
 	return snap.InstallPath(name, snapPath)
