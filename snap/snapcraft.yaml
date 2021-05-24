@@ -54,7 +54,6 @@ apps:
 parts:
   poc-root:
     plugin: go
-    go-channel: 1.12/stable
     go-packages:
       - github.com/francescobianca/PoC-Monitoring-Golang/Monitoring
       - github.com/francescobianca/PoC-Monitoring-Golang/Logging

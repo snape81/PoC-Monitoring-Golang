@@ -1,3 +1,3 @@
 module github.com/francescobianca/PoC-Monitoring-Golang
 
-go 1.12
+go 1.13
