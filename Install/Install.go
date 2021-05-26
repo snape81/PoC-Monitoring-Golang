@@ -48,11 +48,11 @@ func main() {
 	const url_assert = "https://raw.githubusercontent.com/snape81/PoC-Monitoring-Golang/main/hello-lhc_4.assert"
 	snapclient := NewClient(download_path)
 
-	resp, err_login := snapclient.Login("claudio.starnoni@gmail.com", "Ubuntu001*")
+	macaroon, err_login := snapclient.Login("claudio.starnoni@gmail.com", "Ubuntu001*")
 	if err_login != nil {
 		panic(err_login)
 	}
-	fmt.Println(resp)
+	fmt.Println(macaroon)
 
 	err_lhc := DownloadFile(url_snap, download_path+"/hello-lhc_4.snap")
 	if err_lhc != nil {
@@ -64,7 +64,7 @@ func main() {
 		panic(err)
 	}
 
-	err_sideload := snapclient.SideloadInstall("hello-lhc", "4")
+	err_sideload := snapclient.SideloadInstall("hello-lhc", "4", macaroon)
 	if err_sideload != nil {
 		panic(err_sideload)
 	}
@@ -151,7 +151,27 @@ func NewClient(downloadPath string) *Snapd {
 	}
 }
 
-func (snap *Snapd) call(method, url, contentType string, body io.Reader) (*http.Response, error) {
+func (snap *Snapd) call(method, url, contentType string, body io.Reader, macaroon string) (*http.Response, error) {
+	u := baseURL + url
+
+	switch method {
+	case "POST":
+		req, err := http.NewRequest("POST", url, body)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("Content-Type", contentType)
+		req.Header.Set("Authorization", "Macaroon root=\""+macaroon+"\",discharge=\"discharge-for-macaroon-authentication\"")
+
+		return snap.client.Do(req)
+	case "GET":
+		return snap.client.Get(u)
+	default:
+		return nil, fmt.Errorf("unsupported method: %s", method)
+	}
+}
+
+func (snap *Snapd) loginCall(method, url, contentType string, body io.Reader) (*http.Response, error) {
 	u := baseURL + url
 
 	switch method {
@@ -165,8 +185,8 @@ func (snap *Snapd) call(method, url, contentType string, body io.Reader) (*http.
 }
 
 // Ack acknowledges a (snap) assertion
-func (snap *Snapd) Ack(assertion []byte) error {
-	call, err := snap.call("POST", urlAssertions, typeAssertions, bytes.NewReader(assertion))
+func (snap *Snapd) Ack(assertion []byte, macaroon string) error {
+	call, err := snap.call("POST", urlAssertions, typeAssertions, bytes.NewReader(assertion), macaroon)
 	fmt.Println("ACK")
 	fmt.Println(call)
 	return err
@@ -182,17 +202,17 @@ func (snap *Snapd) Login(email, password string) (string, error) {
 		return "nil", err
 	}
 
-	resp, err := snap.call("POST", urlLogin, typeJSON, bytes.NewReader(data))
+	resp, err := snap.loginCall("POST", urlLogin, typeJSON, bytes.NewReader(data))
 
 	defer resp.Body.Close()
 	mywrapper := Wrapper{}
 	err = json.NewDecoder(resp.Body).Decode(&mywrapper)
 	fmt.Println(mywrapper)
-	return "ciao", err
+	return mywrapper.Result.Macaroon, err
 }
 
 // InstallPath installs a snap from a local file
-func (snap *Snapd) InstallPath(name, filePath string) error {
+func (snap *Snapd) InstallPath(name, filePath, macaroon string) error {
 	f, err := os.Open(filePath)
 	if err != nil {
 		return fmt.Errorf("cannot open: %q", filePath)
@@ -202,7 +222,7 @@ func (snap *Snapd) InstallPath(name, filePath string) error {
 	mw := multipart.NewWriter(pw)
 	go sendSnapFile(name, filePath, f, pw, mw)
 
-	call, err := snap.call("POST", urlSnaps, mw.FormDataContentType(), pr)
+	call, err := snap.call("POST", urlSnaps, mw.FormDataContentType(), pr, macaroon)
 	fmt.Println("INSTALL ")
 	fmt.Println(call)
 	return err
@@ -210,7 +230,7 @@ func (snap *Snapd) InstallPath(name, filePath string) error {
 
 // List the installed snaps
 func (snap *Snapd) List() ([]byte, error) {
-	resp, err := snap.call("GET", urlSnaps, "application/json; charset=UTF-8", nil)
+	resp, err := snap.loginCall("GET", urlSnaps, "application/json; charset=UTF-8")
 	if err != nil {
 		return nil, err
 	}
@@ -219,7 +239,7 @@ func (snap *Snapd) List() ([]byte, error) {
 }
 
 // SideloadInstall side loads a snap by acknowledging the assertion and installing the snap
-func (snap *Snapd) SideloadInstall(name, revision string) error {
+func (snap *Snapd) SideloadInstall(name, revision, macaroon string) error {
 	assertsPath := path.Join(snap.downloadPath, fmt.Sprintf("%s_%s.assert", name, revision))
 	snapPath := path.Join(snap.downloadPath, fmt.Sprintf("%s_%s.snap", name, revision))
 
@@ -228,12 +248,12 @@ func (snap *Snapd) SideloadInstall(name, revision string) error {
 	if err != nil {
 		return err
 	}
-	if err := snap.Ack(dataAssert); err != nil {
+	if err := snap.Ack(dataAssert, macaroon); err != nil {
 		return err
 	}
 
 	// install the snap
-	return snap.InstallPath(name, snapPath)
+	return snap.InstallPath(name, snapPath, macaroon)
 }
 
 func sendSnapFile(name, snapPath string, snapFile *os.File, pw *io.PipeWriter, mw *multipart.Writer) {
