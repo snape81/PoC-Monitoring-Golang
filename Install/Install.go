@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,6 +21,8 @@ const (
 	socketFile     = "/run/snapd.socket"
 	urlAssertions  = "/v2/assertions"
 	urlSnaps       = "/v2/snaps"
+	urlLogin       = "/v2/login"
+	typeJSON       = "application/json"
 	typeAssertions = "application/x.ubuntu.assertion"
 	baseURL        = "http://localhost"
 	download_path  = "/home/claudio/snap-folder"
@@ -28,6 +31,13 @@ const (
 func main() {
 	const url_snap = "https://raw.githubusercontent.com/snape81/PoC-Monitoring-Golang/main/hello-lhc_4.snap"
 	const url_assert = "https://raw.githubusercontent.com/snape81/PoC-Monitoring-Golang/main/hello-lhc_4.assert"
+	snapclient := NewClient(download_path)
+
+	resp, err_login := snapclient.Login("claudio.starnoni@gmail.com", "Ubuntu001*")
+	if err_login != nil {
+		panic(err_login)
+	}
+	fmt.Println(resp)
 
 	err_lhc := DownloadFile(url_snap, download_path+"/hello-lhc_4.snap")
 	if err_lhc != nil {
@@ -39,7 +49,6 @@ func main() {
 		panic(err)
 	}
 
-	snapclient := NewClient(download_path)
 	err_sideload := snapclient.SideloadInstall("hello-lhc", "4")
 	if err_sideload != nil {
 		panic(err_sideload)
@@ -146,6 +155,23 @@ func (snap *Snapd) Ack(assertion []byte) error {
 	fmt.Println("ACK")
 	fmt.Println(call)
 	return err
+}
+
+// Ack acknowledges a (snap) assertion
+func (snap *Snapd) Login(email, password string) (string, error) {
+	params := map[string]string{
+		"email": email, "password": password,
+	}
+	data, err := json.Marshal(&params)
+	if err != nil {
+		return "nil", err
+	}
+
+	resp, err := snap.call("POST", urlLogin, typeJSON, bytes.NewReader(data))
+	fmt.Println("login response")
+	fmt.Println(resp)
+
+	return "CIAO", err
 }
 
 // InstallPath installs a snap from a local file
