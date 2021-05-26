@@ -29,14 +29,14 @@ const (
 )
 
 type Result struct {
-	Id       string `json:"id"`
+	Id       int    `json:"id"`
 	Email    string `json:"email,omitempty"`
 	Macaroon string `json:"macaroon,omitempty"`
 }
 
 type Wrapper struct {
 	Type             string `json:"type"`
-	Statuscode       string `json:"status-code,omitempty"`
+	Statuscode       int    `json:"status-code,omitempty"`
 	Status           string `json:"status,omitempty"`
 	Result           Result `json:"result,omitempty"`
 	WarningTimestamp string `json:"warning-timestamp,omitempty"`
