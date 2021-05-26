@@ -230,7 +230,7 @@ func (snap *Snapd) InstallPath(name, filePath, macaroon string) error {
 
 // List the installed snaps
 func (snap *Snapd) List() ([]byte, error) {
-	resp, err := snap.loginCall("GET", urlSnaps, "application/json; charset=UTF-8")
+	resp, err := snap.loginCall("GET", urlSnaps, "application/json; charset=UTF-8", nil)
 	if err != nil {
 		return nil, err
 	}
