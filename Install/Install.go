@@ -156,7 +156,7 @@ func (snap *Snapd) call(method, url, contentType string, body io.Reader, macaroo
 
 	switch method {
 	case "POST":
-		req, err := http.NewRequest("POST", url, body)
+		req, err := http.NewRequest("POST", baseURL+url, body)
 		if err != nil {
 			return nil, err
 		}
