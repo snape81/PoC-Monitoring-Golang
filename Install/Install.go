@@ -28,14 +28,19 @@ const (
 	download_path  = "/home/claudio/snap-folder"
 )
 
-type UserState struct {
-	ID              int      `json:"id"`
-	Username        string   `json:"username,omitempty"`
-	Email           string   `json:"email,omitempty"`
-	Macaroon        string   `json:"macaroon,omitempty"`
-	Discharges      []string `json:"discharges,omitempty"`
-	StoreMacaroon   string   `json:"store-macaroon,omitempty"`
-	StoreDischarges []string `json:"store-discharges,omitempty"`
+type Result struct {
+	Id       string `json:"id"`
+	Email    string `json:"email,omitempty"`
+	Macaroon string `json:"macaroon,omitempty"`
+}
+
+type Wrapper struct {
+	Type             string `json:"type"`
+	Statuscode       string `json:"status-code,omitempty"`
+	Status           string `json:"status,omitempty"`
+	Result           Result `json:"result,omitempty"`
+	WarningTimestamp string `json:"warning-timestamp,omitempty"`
+	WarningCount     int    `json:"warning-count,omitempty"`
 }
 
 func main() {
@@ -180,13 +185,10 @@ func (snap *Snapd) Login(email, password string) (string, error) {
 	resp, err := snap.call("POST", urlLogin, typeJSON, bytes.NewReader(data))
 
 	defer resp.Body.Close()
-
-	var authUser map[string]interface{}
-	err = json.NewDecoder(resp.Body).Decode(&authUser)
-
-	user := authUser["result"].(UserState)
-	fmt.Println(user)
-	return user.Macaroon, err
+	mywrapper := Wrapper{}
+	err = json.NewDecoder(resp.Body).Decode(&mywrapper)
+	fmt.Println(mywrapper)
+	return "ciao", err
 }
 
 // InstallPath installs a snap from a local file
@@ -269,4 +271,11 @@ func sendSnapFile(name, snapPath string, snapFile *os.File, pw *io.PipeWriter, m
 
 	mw.Close()
 	pw.Close()
+}
+
+func getJson(r http.Response, target interface{}) error {
+
+	defer r.Body.Close()
+
+	return json.NewDecoder(r.Body).Decode(target)
 }
