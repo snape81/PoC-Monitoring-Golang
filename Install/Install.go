@@ -28,6 +28,16 @@ const (
 	download_path  = "/home/claudio/snap-folder"
 )
 
+type UserState struct {
+	ID              int      `json:"id"`
+	Username        string   `json:"username,omitempty"`
+	Email           string   `json:"email,omitempty"`
+	Macaroon        string   `json:"macaroon,omitempty"`
+	Discharges      []string `json:"discharges,omitempty"`
+	StoreMacaroon   string   `json:"store-macaroon,omitempty"`
+	StoreDischarges []string `json:"store-discharges,omitempty"`
+}
+
 func main() {
 	const url_snap = "https://raw.githubusercontent.com/snape81/PoC-Monitoring-Golang/main/hello-lhc_4.snap"
 	const url_assert = "https://raw.githubusercontent.com/snape81/PoC-Monitoring-Golang/main/hello-lhc_4.assert"
@@ -168,10 +178,15 @@ func (snap *Snapd) Login(email, password string) (string, error) {
 	}
 
 	resp, err := snap.call("POST", urlLogin, typeJSON, bytes.NewReader(data))
-	fmt.Println("login response")
-	fmt.Println(resp)
 
-	return "CIAO", err
+	defer resp.Body.Close()
+
+	var authUser map[string]interface{}
+	err = json.NewDecoder(resp.Body).Decode(&authUser)
+
+	user := authUser["result"].(UserState)
+	fmt.Println(user)
+	return user.Macaroon, err
 }
 
 // InstallPath installs a snap from a local file
